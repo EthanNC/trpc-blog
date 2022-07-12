@@ -26,7 +26,7 @@ export default function RegisterPage() {
           <span>
             Already have an account Account?{" "}
             <Link href="/login">
-              <a className="link">Register</a>
+              <a className="link">Login</a>
             </Link>
           </span>
           <input

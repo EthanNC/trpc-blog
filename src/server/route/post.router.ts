@@ -15,6 +15,7 @@ export const postRouter = createRouter()
           message: "Can not create a post while logged out",
         });
       }
+
       const post = await ctx.prisma.post.create({
         data: {
           ...input,
@@ -42,7 +43,35 @@ export const postRouter = createRouter()
           id: input.postId,
         },
         include: {
-          Comment: true,
+          Comment: {
+            include: {
+              Children: {
+                include: {
+                  Children: {
+                    include: {
+                      Children: {
+                        include: {
+                          Children: {
+                            include: {
+                              Children: {
+                                include: {
+                                  Children: {
+                                    orderBy: {
+                                      createdAt: "desc",
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
     },

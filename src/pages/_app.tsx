@@ -19,8 +19,10 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <UserContextProvider value={data}>
-      <Navbar />
-      <Component {...pageProps} />
+      <div className="layout">
+        <Navbar />
+        <Component {...pageProps} />
+      </div>
     </UserContextProvider>
   );
 }
