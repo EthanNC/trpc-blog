@@ -7,3 +7,7 @@ export const createCommentSchema = z.object({
 });
 
 export type createCommentInput = z.TypeOf<typeof createCommentSchema>;
+
+export const getSingleCommentSchema = z.object({
+  commentId: z.string().uuid(),
+});

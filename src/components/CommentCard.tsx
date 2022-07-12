@@ -1,6 +1,7 @@
 import { Comment } from "@prisma/client";
 import * as React from "react";
 import { useForm } from "react-hook-form";
+import { useUserContext } from "../context/user.context";
 import { trpc } from "../util/trpc";
 
 interface CommentProps {
@@ -10,6 +11,7 @@ interface CommentProps {
 
 export default function CommentCard({ comment, postId }: CommentProps) {
   const parentId = comment.id;
+  const user = useUserContext();
   const utils = trpc.useContext();
   const { handleSubmit, register, reset } = useForm();
 
@@ -20,6 +22,15 @@ export default function CommentCard({ comment, postId }: CommentProps) {
       utils.invalidateQueries(["posts.single-post"]);
     },
   });
+
+  const { mutate: deleteComment } = trpc.useMutation(
+    ["comments.delete-comment"],
+    {
+      onSuccess() {
+        utils.invalidateQueries(["posts.single-post"]);
+      },
+    }
+  );
 
   function addReply(values: any) {
     const { parentId } = values;
@@ -41,6 +52,16 @@ export default function CommentCard({ comment, postId }: CommentProps) {
         <label>parentId:</label>
         {comment.parentId}
       </span>
+      <div>
+        {user?.id === comment?.userId && (
+          <button
+            onClick={() => deleteComment({ commentId: comment.id })}
+            className="btn btn-error"
+          >
+            Delete Comment
+          </button>
+        )}
+      </div>
       <form
         onSubmit={handleSubmit((values) => addReply({ ...values, parentId }))}
         className="collapse"
@@ -67,34 +88,6 @@ export default function CommentCard({ comment, postId }: CommentProps) {
           postId={postId}
         />
       ))}
-      {/* {data.Comment.filter(
-      (comment) => comment.parentId === parentId
-    ).map((comment) => {
-      <div className="" key={parentId}>
-        <div className="text-xl font-medium">
-          {comment.comment} Hello
-        </div>
-        <form
-          onSubmit={handleSubmit((values) =>
-            addReply({ ...values, parentId })
-          )}
-          className="collapse"
-        >
-          <input type="checkbox" {...register("checkbox")} />
-          <div className="collapse-title link">Reply</div>
-          <div className="collapse-content flex flex-col">
-            <textarea
-              className="textarea input-primary"
-              placeholder="reply"
-              {...register(`replies[${parentId}].comment`)}
-            />
-            <button className="btn btn-primary" type="submit">
-              Reply
-            </button>
-          </div>
-        </form>
-      </div>;
-    })} */}
     </div>
   );
 }

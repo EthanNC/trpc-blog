@@ -42,7 +42,9 @@ export const postRouter = createRouter()
         where: {
           id: input.postId,
         },
+
         include: {
+          user: true,
           Comment: {
             include: {
               Children: {
@@ -72,6 +74,39 @@ export const postRouter = createRouter()
               },
             },
           },
+        },
+      });
+    },
+  })
+  .mutation("delete-post", {
+    input: getSinglePostSchema,
+    async resolve({ ctx, input }) {
+      if (!ctx.user) {
+        throw new trpc.TRPCError({
+          code: "FORBIDDEN",
+          message: "Can not create a post while logged out",
+        });
+      }
+
+      const data = await ctx.prisma.post.findFirst({
+        where: {
+          id: input.postId,
+        },
+        select: {
+          userId: true,
+        },
+      });
+
+      if (ctx.user.id !== data?.userId) {
+        throw new trpc.TRPCError({
+          code: "FORBIDDEN",
+          message: "User did not create post",
+        });
+      }
+
+      return ctx.prisma.post.delete({
+        where: {
+          id: input.postId,
         },
       });
     },

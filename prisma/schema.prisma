@@ -48,14 +48,14 @@ model Comment {
   votesUp   Int       @default(0)
   votesDown Int       @default(0)
   Children  Comment[] @relation("Comment_Children")
-  parent    Comment?  @relation("Comment_Children", fields: [parentId], references: [id])
+  parent    Comment?  @relation("Comment_Children", fields: [parentId], references: [id], onDelete: Cascade)
   parentId  String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
 
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId String
 
 
