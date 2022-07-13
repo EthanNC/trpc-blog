@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "yarn migrate deploy && next build",
+    "build": "yarn migrate:deploy && next build",
     "start": "next start",
     "migrate:deploy": "prisma migrate deploy --preview-feature"
   },
