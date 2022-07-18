@@ -9,7 +9,7 @@ import {
 } from "../../schema/user.schema";
 import { decode, encode } from "../../util/base64";
 import { signJwt } from "../../util/jwt";
-import { sendLoginEmail } from "../../util/mailer";
+import { sendLoginEmail, sendSesEmail } from "../../util/mailer";
 import { createRouter } from "../createRouter";
 
 export const userRouter = createRouter()
@@ -68,11 +68,19 @@ export const userRouter = createRouter()
         },
       });
 
-      sendLoginEmail({
-        token: encode(`${token.id}:${user.email}`),
-        url: baseUrl,
-        email: user.email,
-      });
+      if (process.env.NODE_ENV === "production") {
+        await sendSesEmail({
+          token: encode(`${token.id}:${user.email}`),
+          url: baseUrl,
+          email: user.email,
+        });
+      } else {
+        sendLoginEmail({
+          token: encode(`${token.id}:${user.email}`),
+          url: baseUrl,
+          email: user.email,
+        });
+      }
 
       return true;
     },

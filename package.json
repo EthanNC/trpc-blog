@@ -12,6 +12,7 @@
     "@trpc/next": "^9.25.3",
     "@trpc/react": "^9.25.3",
     "@trpc/server": "^9.25.3",
+    "aws-sdk": "^2.1176.0",
     "cookie": "^0.5.0",
     "daisyui": "^2.18.1",
     "jotai": "^1.7.3",
