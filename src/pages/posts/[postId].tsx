@@ -8,12 +8,17 @@ import { trpc } from "../../util/trpc";
 export default function Page() {
   const router = useRouter();
   const user = useUserContext();
+  const utils = trpc.useContext();
   const [deleted, setDeleted] = useState<boolean>(false);
 
   const postId = router.query.postId as string;
 
   const { data, isLoading } = trpc.useQuery(["posts.single-post", { postId }]);
-  const { mutate } = trpc.useMutation(["posts.delete-post"]);
+  const { mutate } = trpc.useMutation(["posts.delete-post"], {
+    onSuccess: () => {
+      utils.invalidateQueries(["posts.posts"]);
+    },
+  });
 
   if (isLoading) {
     return <p>Loading posts</p>;
@@ -22,13 +27,6 @@ export default function Page() {
     mutate({ postId });
     setDeleted(true);
   }
-
-  //   const postDeleted: JSX.Element= () => {
-  //     <main>
-  //       <div className="alert alert-success"> Post Deleted</div>
-  //       <Link href="/posts"></Link>
-  //     </main>;
-  //   };
 
   if (deleted) {
     return (

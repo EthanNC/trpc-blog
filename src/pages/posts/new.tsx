@@ -5,11 +5,13 @@ import { trpc } from "../../util/trpc";
 
 export default function createPostPage() {
   const { handleSubmit, register } = useForm<CreatePostInput>();
+  const utils = trpc.useContext();
   const router = useRouter();
 
   const { mutate, error } = trpc.useMutation(["posts.create-post"], {
     onSuccess: ({ id }) => {
       router.push(`/posts/${id}`);
+      utils.invalidateQueries(["posts.posts"]);
     },
   });
 
