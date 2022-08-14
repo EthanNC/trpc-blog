@@ -1,16 +1,16 @@
-import { Comment } from "@prisma/client";
+import { TreeItem } from "performant-array-to-tree";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { useUserContext } from "../context/user.context";
 import { trpc } from "../util/trpc";
 
 interface CommentProps {
-  comment: Comment;
+  comment: TreeItem;
   postId: string;
 }
 
 export default function CommentCard({ comment, postId }: CommentProps) {
-  const parentId = comment.id;
+  const parentId = comment.data.id;
   const user = useUserContext();
   const utils = trpc.useContext();
   const { handleSubmit, register, reset } = useForm();
@@ -35,7 +35,6 @@ export default function CommentCard({ comment, postId }: CommentProps) {
   function addReply(values: any) {
     const { parentId } = values;
     const comment = values.replies[parentId].comment;
-    console.log(comment, parentId, postId);
     mutate({ comment, parentId, postId });
     utils.invalidateQueries(["posts.single-post"]);
     reset();
@@ -43,19 +42,19 @@ export default function CommentCard({ comment, postId }: CommentProps) {
 
   return (
     <div className="card-body">
-      <div className="text-xl font-medium">{comment.comment}</div>
+      <div className="text-xl font-medium">{comment.data.comment}</div>
       <span>
         <label>ID:</label>
-        {comment.id}
+        {comment.data.id}
       </span>
       <span>
         <label>parentId:</label>
-        {comment.parentId}
+        {comment.data.parentId}
       </span>
       <div>
-        {user?.id === comment?.userId && (
+        {user?.id === comment?.data.userId && (
           <button
-            onClick={() => deleteComment({ commentId: comment.id })}
+            onClick={() => deleteComment({ commentId: comment.data.id! })}
             className="btn btn-error"
           >
             Delete Comment
@@ -81,7 +80,7 @@ export default function CommentCard({ comment, postId }: CommentProps) {
         </div>
       </form>
       {/* @ts-ignore */}
-      {(comment.Children || []).map((comment, key) => (
+      {(comment.children || []).map((comment, key) => (
         <CommentCard
           key={`${comment.id}-${key}`}
           comment={comment}

@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import type { Comment } from "@prisma/client";
+import { TreeItem } from "performant-array-to-tree";
 import { Fragment } from "react";
 import { useForm } from "react-hook-form";
 import { trpc } from "../util/trpc";
@@ -7,7 +8,7 @@ import CommentCard from "./CommentCard";
 
 interface CommentListProps {
   postId: string;
-  comments: Comment[] | undefined;
+  comments: TreeItem[] | undefined;
 }
 const CommentList = ({ postId, comments }: CommentListProps) => {
   const utils = trpc.useContext();
@@ -38,7 +39,7 @@ const CommentList = ({ postId, comments }: CommentListProps) => {
           {...register("comment")}
         />
         <div className="inline-flex flex-row-reverse">
-          <button className="btn btn-primary btn-" type="submit">
+          <button className="btn btn-primary" type="submit">
             Comment
           </button>
         </div>
@@ -46,9 +47,9 @@ const CommentList = ({ postId, comments }: CommentListProps) => {
       <div className="card">
         {/* renders top level comments */}
         {comments!
-          .filter((comment) => comment.parentId === null)
+          .filter((comment) => comment.data.parentId === null)
           .map((comment) => {
-            const parentId = comment.id;
+            const parentId = comment.data.id;
             return (
               <Fragment key={parentId}>
                 <CommentCard comment={comment} postId={postId} />

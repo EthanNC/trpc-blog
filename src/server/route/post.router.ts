@@ -1,4 +1,5 @@
 import * as trpc from "@trpc/server";
+import { COMMENT_SELECT_FIELDS } from "../../constants";
 import {
   createPostSchema,
   getSinglePostSchema,
@@ -42,36 +43,16 @@ export const postRouter = createRouter()
         where: {
           id: input.postId,
         },
-
-        include: {
+        select: {
+          body: true,
+          title: true,
           user: true,
           Comment: {
-            include: {
-              Children: {
-                include: {
-                  Children: {
-                    include: {
-                      Children: {
-                        include: {
-                          Children: {
-                            include: {
-                              Children: {
-                                include: {
-                                  Children: {
-                                    orderBy: {
-                                      createdAt: "desc",
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
+            orderBy: {
+              createdAt: "desc",
+            },
+            select: {
+              ...COMMENT_SELECT_FIELDS,
             },
           },
         },
